@@ -1,8 +1,8 @@
 /* use RustSnake::Person;
 use RustSnake::Animal; */
 
-/* use RustSnake::*;
-use RustSnake::{Animal, Person}; */
+use RustSnake::*;
+use RustSnake::{Animal, Person};
 
 
 
