@@ -1,4 +1,5 @@
 use wasm_bindgen::prelude::*;
+use wee_alloc::WeeAlloc;
 
 #[wasm_bindgen]
 pub fn greet(name: &str) {
@@ -9,3 +10,6 @@ pub fn greet(name: &str) {
 extern{
     pub fn alert(name: &str);
 }
+
+#[global_allocator]
+static ALLOC: WeeAlloc = WeeAlloc::INIT;
