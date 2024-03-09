@@ -1,4 +1,0 @@
-compile Rust to weba code
-webassembly can be exucuted in the browser
-it runs at native speed
-3d apps, cad, virtual reality, system application, games.
