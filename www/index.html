@@ -4,13 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      .content-wrapper {
+        top: 0;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+    </style>
   </head>
   <body>
-    <h1>test</h1>
+    <div class="content-wrapper">
+      test
+      <canvas id="snake-canvas"> </canvas>
+    </div>
     <script src="./bootstrap.js"></script>
   </body>
 </html>
-
-(module (import "console" "Log" (func $log))(import "console" "error" (func
-$err))(func $sum (param $a i32) (param $b i32) (result i32) call $log call $err
-local.get $a local.get $b i32.add ) (export "sum" (func $sum)))
