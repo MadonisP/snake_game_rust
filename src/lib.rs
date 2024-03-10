@@ -1,34 +1,39 @@
+
 use wasm_bindgen::prelude::*;
 use wee_alloc::WeeAlloc;
 
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
-// wasm-pack build --target web
 
 struct SnakeCell(usize);
 
 struct Snake {
-    body: Vec<usize>
+    body: Vec<SnakeCell>
 }
 
-impl Snake{
-    fn new(spawn_index:usize) -> Snake {
-        Snake { body: vec!(SnakeCell(spawn_index)) }
+impl Snake {
+    fn new(spawn_index: usize) -> Snake {
+        Snake {
+            body: vec!(SnakeCell(spawn_index))
+        }
     }
 }
 
 #[wasm_bindgen]
 pub struct World {
     width: usize,
-    snake: Snake
+    size: usize,
+    snake: Snake,
 }
 
 #[wasm_bindgen]
 impl World {
     pub fn new() -> World {
-        World { 
-            width: 8, 
-            snake: Snake::new(10),
+        let width = 8;
+        World {
+            width,
+            size: width * width,
+            snake: Snake::new(10)
         }
     }
 
@@ -37,6 +42,13 @@ impl World {
     }
 
     pub fn snake_head_idx(&self) -> usize {
-        self.snake.body[0].0
+       self.snake.body[0].0
+    }
+
+    pub fn update(&mut self) {
+        let snake_idx = self.snake_head_idx();
+        self.snake.body[0].0 = (snake_idx - 1) % self.size;
     }
 }
+
+// wasm-pack build --target web
