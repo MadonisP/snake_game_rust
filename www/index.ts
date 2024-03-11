@@ -1,4 +1,4 @@
-import init, { World, Direction } from "RustSnake";
+import init, { World, Direction } from "snake_game";
 
 init().then(wasm => {
   const CELL_SIZE = 20;
