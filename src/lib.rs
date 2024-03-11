@@ -10,7 +10,7 @@ pub enum Direction {
     Up,
     Right,
     Down,
-    Left,
+    Left
 }
 
 pub struct SnakeCell(usize);
@@ -22,7 +22,7 @@ struct Snake {
 
 impl Snake {
     fn new(spawn_index: usize, size: usize) -> Snake {
-        let mut body = vec![];
+        let mut body = vec!();
 
         for i in 0..size {
             body.push(SnakeCell(spawn_index - i));
@@ -48,7 +48,7 @@ impl World {
         World {
             width,
             size: width * width,
-            snake: Snake::new(snake_idx, 3),
+            snake: Snake::new(snake_idx, 3)
         }
     }
 
@@ -57,7 +57,7 @@ impl World {
     }
 
     pub fn snake_head_idx(&self) -> usize {
-        self.snake.body[0].0
+       self.snake.body[0].0
     }
 
     pub fn change_snake_dir(&mut self, direction: Direction) {
@@ -72,35 +72,51 @@ impl World {
         self.snake.body.as_ptr()
     }
 
-    /*   pub fn snake_cells(&self) -> Vec<SnakeCell> {
-        self.snake.body;
-    } */
+    pub fn step(&mut self) {
+        let next_cell = self.gen_next_snake_cell();
+        self.snake.body[0] = next_cell;
+    }
 
-    pub fn update(&mut self) {
+    fn gen_next_snake_cell(&self) -> SnakeCell {
         let snake_idx = self.snake_head_idx();
-        let (row, col) = self.index_to_cell(snake_idx);
-        let (row, col) = match self.snake.direction {
-            Direction::Right => (row, (col + 1) % self.width),
-            Direction::Left => (row, (col - 1) % self.width),
-            Direction::Up => ((row - 1) % self.width, col),
-            Direction::Down => ((row + 1) % self.width, col),
+        let row = snake_idx / self.width;
+
+        return match self.snake.direction {
+            Direction::Right => {
+                let treshold = (row + 1) * self.width;
+                if snake_idx + 1 == treshold {
+                    SnakeCell(treshold - self.width)
+                } else {
+                    SnakeCell(snake_idx + 1)
+                }
+            },
+            Direction::Left => {
+                let treshold = row * self.width;
+                if snake_idx == treshold {
+                    SnakeCell(treshold + (self.width - 1))
+                } else {
+                    SnakeCell(snake_idx - 1)
+                }
+            },
+            Direction::Up => {
+                let treshold = snake_idx - (row * self.width);
+                if snake_idx == treshold {
+                    SnakeCell((self.size - self.width) + treshold)
+                } else {
+                    SnakeCell(snake_idx - self.width)
+                }
+            },
+            Direction::Down => {
+                let treshold = snake_idx + ((self.width - row) * self.width);
+                if snake_idx + self.width == treshold {
+                    SnakeCell(treshold - ((row + 1) * self.width))
+                } else {
+                    SnakeCell(snake_idx + self.width)
+                }
+            },
         };
-
-        let next_idx = self.cell_to_index(row, col);
-        self.set_snake_head(next_idx);
     }
 
-    fn set_snake_head(&mut self, idx: usize) {
-        self.snake.body[0].0 = idx;
-    }
-
-    fn index_to_cell(&self, idx: usize) -> (usize, usize) {
-        (idx / self.width, idx % self.width)
-    }
-
-    fn cell_to_index(&self, row: usize, col: usize) -> usize {
-        (row * self.width) + col
-    }
 }
 
 // wasm-pack build --target web
