@@ -1,14 +1,15 @@
-import init, { World, Direction } from "RustSnake";
+import init, { World, Direction, GameStatus } from "RustSnake";
 import { rnd } from "./utils/rnd";
 
 init().then(wasm => {
   const CELL_SIZE = 20;
-  const WORLD_WIDTH = 5;
+  const WORLD_WIDTH = 8;
   const snakeSpawnIdx = rnd(WORLD_WIDTH * WORLD_WIDTH);
 
   const world = World.new(WORLD_WIDTH, snakeSpawnIdx);
   const worldWidth = world.width();
 
+  const points = document.getElementById("points");
   const gameStatus = document.getElementById("game-status");
   const gameControlBtn = document.getElementById("game-control-btn");
   const canvas = <HTMLCanvasElement> document.getElementById("snake-canvas");
@@ -86,11 +87,14 @@ init().then(wasm => {
       world.snake_length()
     )
 
-    snakeCells.forEach((cellIdx, i) => {
+    snakeCells
+      .slice()
+      .reverse()
+      .forEach((cellIdx, i) => {
       const col = cellIdx % worldWidth;
       const row = Math.floor(cellIdx / worldWidth);
 
-      ctx.fillStyle = i === 0 ? "#7878db" : "#000000";
+      ctx.fillStyle = i === snakeCells.length - 1  ? "#7878db" : "#000000";
 
       ctx.beginPath();
       ctx.fillRect(
@@ -106,6 +110,7 @@ init().then(wasm => {
 
   function drawGameStatus() {
     gameStatus.textContent = world.game_status_text();
+    points.textContent = world.points().toString();
   }
 
   function paint() {
@@ -116,8 +121,16 @@ init().then(wasm => {
   }
 
   function play() {
+    const status = world.game_status();
+
+    if (status == GameStatus.Won || status == GameStatus.Lost) {
+      gameControlBtn.textContent = "Re-Play";
+      return;
+    }
+
     const fps = 3;
     setTimeout(() => {
+      console.log("Playing!");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       world.step();
       paint();
